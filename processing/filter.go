@@ -1,4 +1,4 @@
-package effects
+package processing
 
 import (
 	"github.com/lbwise/audiowrld/simplesynth/constants"

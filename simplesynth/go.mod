@@ -3,6 +3,7 @@ module github.com/lbwise/audiowrld/simplesynth
 go 1.25.3
 
 require (
+	github.com/lbwise/audiowrld v0.0.0-20251112003633-dfd0ef30e24d
 	go-hep.org/x/hep v0.38.1
 	gonum.org/v1/plot v0.16.0
 )

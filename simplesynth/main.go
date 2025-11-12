@@ -6,10 +6,12 @@ import (
 	"os"
 	"time"
 
+	midi "github.com/lbwise/audiowrld/mididriver"
+	"github.com/lbwise/audiowrld/processing"
+
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
-	"github.com/lbwise/audiowrld/effects"
 
 	"github.com/lbwise/audiowrld/simplesynth/io"
 	"github.com/lbwise/audiowrld/simplesynth/notes"
@@ -17,6 +19,8 @@ import (
 )
 
 func main() {
+
+	chnls := make([]midi.Channel, midi.MAX_CHANNELS)
 
 	if len(os.Args) > 1 && os.Args[1] == "midi" {
 		return
@@ -48,7 +52,7 @@ func main() {
 		}
 	}
 
-	ce := effects.NewClippingEffect(120, 40)
+	ce := processing.NewClippingEffect(120, 40)
 	ce.Bypass = true
 	err := ce.Process(buf, buf)
 	if err != nil {

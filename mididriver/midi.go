@@ -1,10 +1,30 @@
-package midi
+package mididriver
 
 import (
 	"errors"
+
+	"github.com/lbwise/audiowrld/simplesynth/oscillator"
 )
 
-type MidiChannel interface{}
+const MAX_CHANNELS = 16
+
+type Channels []*Channel
+
+func (m Channels) NewMidiChannel(inst oscillator.Instrument) (error, *Channel) {
+	if len(m) == MAX_CHANNELS-1 {
+		return errors.New("too many channels"), nil
+	}
+	id := len(m) // Is this the best way to do the id?
+	ch := &Channel{Id: id, Instrument: inst}
+	m[id] = ch
+	return nil, ch
+
+}
+
+type Channel struct {
+	Id         int
+	Instrument oscillator.Instrument
+}
 
 func NewMidiRawMsg(note, velocity, ch int, channels []MidiChannel) (error, *MidiRawMsg) {
 	if !isOneByte(note) {

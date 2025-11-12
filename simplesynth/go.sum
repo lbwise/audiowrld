@@ -28,6 +28,8 @@ github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGw
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
+github.com/lbwise/audiowrld v0.0.0-20251112003633-dfd0ef30e24d h1:yrgoFbRA3Vptz6Ionx95L7qvqz6wZyV6cESEyUwcpsA=
+github.com/lbwise/audiowrld v0.0.0-20251112003633-dfd0ef30e24d/go.mod h1:kj9b3WGlNQ51eCQx53j/sJNg0+VqziN7b+m1340f5+Y=
 github.com/pkg/diff v0.0.0-20241224192749-4e6772a4315c h1:8TRxBMS/YsupXoOiGKHr9ZOXo+5DezGWPgBAhBHEHto=
 github.com/pkg/diff v0.0.0-20241224192749-4e6772a4315c/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
