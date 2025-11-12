@@ -14,7 +14,7 @@ func CreateWAV(dir string, name string, audio []int16, sampleSize int) {
 		panic(fmt.Sprintf("Could not create WAV file: %s", err))
 	}
 
-	writeWavHeader(f, sampleSize, constants.SAMPLE_RATE, 16, 1)
+	writeWavHeader(f, sampleSize, constants.SampleRate, 16, 1)
 
 	for _, sample := range audio {
 		err = binary.Write(f, binary.LittleEndian, sample)

@@ -34,11 +34,11 @@ func (s *Stave) Generate() int {
 	var sampleSize int
 	for i := range *s {
 		note := &(*s)[i] // reference to the actual element
-		sampleSize += note.Interval * constants.SAMPLE_RATE / 1000
+		sampleSize += note.Interval * constants.SampleRate / 1000
 		if note.Velocity == 0 {
 			note.Velocity = 127
 		}
-		note.Amplitude = int16(constants.MAX_AMP * note.Velocity / 128)
+		note.Amplitude = int16(constants.MaxAmp * note.Velocity / 128)
 		note.Frequency = GetFrequency(note.Note, note.Octave)
 	}
 	return sampleSize

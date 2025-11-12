@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sync"
 	"time"
 
 	midi "github.com/lbwise/audiowrld/mididriver"
@@ -20,7 +21,41 @@ import (
 
 func main() {
 
-	chnls := make([]midi.Channel, midi.MAX_CHANNELS)
+	var chs midi.Channels = make([]*midi.Channel, midi.MaxChannels)
+	err, chId := chs.NewChannel()
+	if err != nil {
+		panic(err)
+	}
+
+	err, stopCb := chs[chId].Play(1)
+	if err != nil {
+
+	}
+
+	var wg sync.WaitGroup
+	in := make(chan midi.RawMsg)
+	scn := midi.NewScanner(in, chs)
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		err = scn.Scan()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		go midi.MidiSim(in, int(chId))
+	}()
+
+	err = stopCb()
+	if err != nil {
+		panic(err)
+	}
+
+	wg.Wait()
+	return
 
 	if len(os.Args) > 1 && os.Args[1] == "midi" {
 		return
@@ -54,7 +89,7 @@ func main() {
 
 	ce := processing.NewClippingEffect(120, 40)
 	ce.Bypass = true
-	err := ce.Process(buf, buf)
+	//err := ce.Process(buf, buf)
 	if err != nil {
 		panic(err)
 	}

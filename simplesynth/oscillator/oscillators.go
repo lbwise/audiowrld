@@ -17,11 +17,11 @@ type SquareOscillator struct {
 
 func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 
-	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	numSamples := s.Note.Interval * constants.SampleRate / 1000
 	amp := s.Note.Amplitude
 
 	for i := 0; i < numSamples; i++ {
-		t := float64(i) / float64(constants.SAMPLE_RATE)
+		t := float64(i) / float64(constants.SampleRate)
 		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
 		if y >= 0 {
 			buf[writeIdx+i] = amp
@@ -37,11 +37,11 @@ type SinOscillator struct {
 }
 
 func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
-	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	numSamples := s.Note.Interval * constants.SampleRate / 1000
 	amp := s.Note.Amplitude
 
 	for i := 0; i < numSamples; i++ {
-		t := float64(i) / float64(constants.SAMPLE_RATE)
+		t := float64(i) / float64(constants.SampleRate)
 		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
 		buf[writeIdx+i] = int16(y)
 	}
@@ -53,14 +53,14 @@ type TriangleOscillator struct {
 }
 
 func (s *TriangleOscillator) Generate(buf []int16, writeIdx int) (int, error) {
-	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	numSamples := s.Note.Interval * constants.SampleRate / 1000
 	amp := float64(s.Note.Amplitude)
 
 	var phase float64
 	// y = 4/f * x - amp
 	for i := 0; i < numSamples; i++ {
-		// YALL I NEED THIS EXPLAINED
-		phase += s.Note.Frequency / float64(constants.SAMPLE_RATE)
+		// I NEED THIS EXPLAINED
+		phase += s.Note.Frequency / float64(constants.SampleRate)
 		if phase >= 1.0 {
 			phase -= 1.0
 		}
