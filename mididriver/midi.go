@@ -38,11 +38,13 @@ func validMidiParam(value byte) bool {
 }
 
 func MidiSim(out chan<- RawMsg, chId int) {
-	data := NewRawMsg(60, 100, chId, true)
+	on := false
 	for i := 0; i < 10; i++ {
+		on = !on
+		data := NewRawMsg(60, 100, chId, on)
 		out <- data
 		fmt.Println("MSG SENT")
-		time.Sleep(time.Millisecond * 1000) // simulate timing
+		time.Sleep(time.Millisecond * 2000) // simulate timing
 	}
 	close(out)
 }

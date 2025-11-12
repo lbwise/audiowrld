@@ -31,7 +31,7 @@ func main() {
 	wg.Add(2)
 
 	var stopCb func() error
-	err, stopCb = chs[chId].Play(1)
+	err, stopCb = chs[chId].Play(512)
 	if err != nil {
 		panic(err)
 	}

@@ -3,8 +3,9 @@ package mididriver
 import (
 	"errors"
 	"fmt"
-	"sync"
 	"time"
+
+	"github.com/lbwise/audiowrld/simplesynth/constants"
 )
 
 // So the idea is we receive all these events from the scanner as instructions
@@ -26,12 +27,10 @@ func (ch *Channel) Play(chunkSize int) (error, func() error) {
 		return nil
 	}
 
-	var wg sync.WaitGroup
 	go func() {
-		defer wg.Done()
 		for recording {
-			fmt.Println("RECORDING")
-			time.Sleep(time.Millisecond * 500)
+			// Generate chunk
+			time.Sleep(time.Second * time.Duration(float64(chunkSize)/float64(constants.SampleRate)))
 		}
 	}()
 	return nil, stopCb

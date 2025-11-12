@@ -4,4 +4,6 @@ use (
 	./mididriver
 	./simplesynth
 	./processing
+	./engine
+	./io
 )
