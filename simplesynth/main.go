@@ -27,18 +27,20 @@ func main() {
 		panic(err)
 	}
 
-	err, stopCb := chs[chId].Play(1)
-	if err != nil {
+	var wg sync.WaitGroup
+	wg.Add(2)
 
+	var stopCb func() error
+	err, stopCb = chs[chId].Play(1)
+	if err != nil {
+		panic(err)
 	}
 
-	var wg sync.WaitGroup
-	in := make(chan midi.RawMsg)
+	in := make(chan midi.RawMsg, 64)
 	scn := midi.NewScanner(in, chs)
-	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		err = scn.Scan()
+		err := scn.Scan()
 		if err != nil {
 			panic(err)
 		}
@@ -46,10 +48,13 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		go midi.MidiSim(in, int(chId))
+		defer func() {
+			fmt.Println("STOPPING FIRST")
+			stopCb()
+		}()
+		midi.MidiSim(in, int(chId))
 	}()
 
-	err = stopCb()
 	if err != nil {
 		panic(err)
 	}
