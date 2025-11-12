@@ -1,0 +1,73 @@
+package oscillator
+
+import (
+	"math"
+
+	"github.com/lbwise/audiowrld/simplesynth/constants"
+	"github.com/lbwise/audiowrld/simplesynth/notes"
+)
+
+type Oscillator interface {
+	Generate([]int16, int) (int, error)
+}
+
+type SquareOscillator struct {
+	Note notes.StaveNote
+}
+
+func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
+
+	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	amp := s.Note.Amplitude
+
+	for i := 0; i < numSamples; i++ {
+		t := float64(i) / float64(constants.SAMPLE_RATE)
+		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
+		if y >= 0 {
+			buf[writeIdx+i] = amp
+		} else {
+			buf[writeIdx+i] = -amp
+		}
+	}
+	return numSamples, nil
+}
+
+type SinOscillator struct {
+	Note notes.StaveNote
+}
+
+func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
+	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	amp := s.Note.Amplitude
+
+	for i := 0; i < numSamples; i++ {
+		t := float64(i) / float64(constants.SAMPLE_RATE)
+		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
+		buf[writeIdx+i] = int16(y)
+	}
+	return numSamples, nil
+}
+
+type TriangleOscillator struct {
+	Note notes.StaveNote
+}
+
+func (s *TriangleOscillator) Generate(buf []int16, writeIdx int) (int, error) {
+	numSamples := s.Note.Interval * constants.SAMPLE_RATE / 1000
+	amp := float64(s.Note.Amplitude)
+
+	var phase float64
+	// y = 4/f * x - amp
+	for i := 0; i < numSamples; i++ {
+		// YALL I NEED THIS EXPLAINED
+		phase += s.Note.Frequency / float64(constants.SAMPLE_RATE)
+		if phase >= 1.0 {
+			phase -= 1.0
+		}
+
+		// triangle wave formula
+		y := 4*amp*math.Abs(phase-0.5) - amp
+		buf[writeIdx+i] = int16(y)
+	}
+	return numSamples, nil
+}
