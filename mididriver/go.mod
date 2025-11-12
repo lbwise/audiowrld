@@ -1,4 +1,4 @@
-module gitbuh.com/lbwise/audiowrld/mididriver
+module github.com/lbwise/audiowrld/mididriver
 
 go 1.25.3
 
