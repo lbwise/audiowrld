@@ -1,22 +1,24 @@
 package engine
 
 import (
-	"sync"
+	"errors"
+	"fmt"
+	//"sync"
 
+	"github.com/lbwise/audiowrld/audio"
 	"github.com/lbwise/audiowrld/io"
 	midi "github.com/lbwise/audiowrld/mididriver"
-	"github.com/lbwise/audiowrld/simplesynth/constants"
 	inst "github.com/lbwise/audiowrld/simplesynth/oscillator"
 )
 
 type Ticker interface {
-	Tick(in AudioBuffer) (error, AudioBuffer)
+	Tick(in audio.Buffer) (error, audio.Buffer)
 }
 
 type Clock int
 
 type Engine struct {
-	params       *Params
+	params       *audio.Params
 	channels     midi.Channels
 	instruments  []inst.Instrument
 	outputDevice *io.OutputDevice
@@ -24,98 +26,75 @@ type Engine struct {
 	tracks       []Track
 	master       Track
 	tick         int
-	outputBuffer []AudioBuffer
-}
-
-func (eng *Engine) Init() error {
-	// detect midi devices
-	// start scanner
-
-	eng.scanChan = make(chan midi.RawMsg, 64)
-	scn := midi.NewScanner(eng.scanChan, eng.channels)
-	go func() {
-		err := scn.Scan()
-		if err != nil {
-			panic(err)
-		}
-	}()
-
-	return nil
-}
-
-func (eng *Engine) Record() error {
-	err, chId := eng.channels.NewChannel()
-	if err != nil {
-		panic(err)
-	}
-
-	var wg sync.WaitGroup
-	wg.Add(1)
-	err, stopCb := eng.channels[chId].Play(512)
-	if err != nil {
-		panic(err)
-	}
-
-	go func() {
-		defer wg.Done()
-		defer func() {
-			stopCb()
-		}()
-		midi.MidiSim(eng.scanChan, int(chId))
-	}()
-
-	return nil
+	outputBuffer []audio.Buffer
 }
 
 func (eng *Engine) Start(checkStop func() bool) error {
 
-	eng.scanChan = make(chan midi.RawMsg, 64)
-	scn := midi.NewScanner(eng.scanChan, eng.channels)
-	go func() {
-		err := scn.Scan()
-		if err != nil {
-			panic(err)
-		}
-	}()
+	// Start midi scanner (ONLY IF MIDI CHANNEL APPLICABLE?)
+	//var wg sync.WaitGroup
+	//wg.Add(2)
+	//eng.scanChan = make(chan midi.RawMsg, 64)
+	//scn := midi.NewScanner(eng.scanChan, eng.channels)
+	//go func() {
+	//	err := scn.Scan()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}()
+	//
+	//go func() {
+	//	defer wg.Done()
+	//	defer func() {
+	//		stopCb()
+	//	}()
+	//	midi.MidiSim(eng.scanChan, int(chId))
+	//}()
 
+	// This need to be done per callback request by the audio engine
+	for {
+		masterBuf := audio.NewBuffer()
+		err, masterBuf := eng.Tick(masterBuf)
+		if err != nil {
+			panic(err) // fix this
+		}
+		//// Save and play audio
+		//io.Save
+	}
 }
 
-func (eng *Engine) Tick() {
+func (eng *Engine) Tick(buf audio.Buffer) (error, audio.Buffer) {
 	// The tick order should be something like this
 	eng.tick++
 
+	// These should all be go routines and then collected to mix
 	for _, track := range eng.tracks {
-		buf := make([]AudioBuffer, eng.params.chunkSize)
+		trackBuf := audio.NewBuffer()
 		if track.Type() == MidiTrack {
 			midiTr := InputTrack(track)
-			err, buf := midiTr.channel.Tick(buf)
-			midiTr.Tick(buf)
-
-		}
-
-	}
-
-	for _, ch := range eng.channels {
-		if ch != nil {
-			err, buf = ch.Tick()
+			err, buf := midiTr.channel.Tick(trackBuf)
+			trackBuf = buf
 			if err != nil {
-				panic(err)
+				return errors.New(fmt.Sprintf("MIDI TICK ERROR: %s", err)), buf
 			}
+
+			//midiTr.Tick(buf)
+		} else {
+			//audioTrack := AudioTrack(track)
+			return nil, trackBuf
 		}
+
+		// Processing (or is that done in track.Tick ?)
 	}
 
-}
-
-type Params struct {
-	master     int
-	sampleRate int
-	chunkSize  int
-}
-
-func NewDefaultParams() *Params {
-	return &Params{
-		master:     0,
-		sampleRate: constants.SampleRate,
-		chunkSize:  512,
+	// Mix
+	err, outBuf := Mix(buf, []audio.Buffer{})
+	if err != nil {
+		return err, buf
 	}
+
+	// Process mix (or is that done in mix track.Tick)
+
+	buf = outBuf
+	return nil, buf
 }

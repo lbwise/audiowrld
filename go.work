@@ -1,9 +1,12 @@
 go 1.25.3
 
 use (
-	./mididriver
 	./simplesynth
+
+	./mididriver
 	./processing
 	./engine
 	./io
+	./audio
+	./instrument
 )

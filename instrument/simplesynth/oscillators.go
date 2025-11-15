@@ -1,10 +1,10 @@
-package oscillator
+package instrument
 
 import (
 	"math"
 
-	"github.com/lbwise/audiowrld/simplesynth/constants"
-	"github.com/lbwise/audiowrld/simplesynth/notes"
+	"github.com/lbwise/audiowrld/audio"
+	"github.com/lbwise/audiowrld/instrument"
 )
 
 type Oscillator interface {
@@ -12,16 +12,16 @@ type Oscillator interface {
 }
 
 type SquareOscillator struct {
-	Note notes.StaveNote
+	Note instrument.StaveNote
 }
 
 func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 
-	numSamples := s.Note.Interval * constants.SampleRate / 1000
+	numSamples := s.Note.Interval * audio.SampleRate / 1000
 	amp := s.Note.Amplitude
 
 	for i := 0; i < numSamples; i++ {
-		t := float64(i) / float64(constants.SampleRate)
+		t := float64(i) / float64(audio.SampleRate)
 		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
 		if y >= 0 {
 			buf[writeIdx+i] = amp
@@ -33,15 +33,15 @@ func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 }
 
 type SinOscillator struct {
-	Note notes.StaveNote
+	Note instrument.StaveNote
 }
 
 func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
-	numSamples := s.Note.Interval * constants.SampleRate / 1000
+	numSamples := s.Note.Interval * audio.SampleRate / 1000
 	amp := s.Note.Amplitude
 
 	for i := 0; i < numSamples; i++ {
-		t := float64(i) / float64(constants.SampleRate)
+		t := float64(i) / float64(audio.SampleRate)
 		y := float64(amp) * math.Sin(2*math.Pi*s.Note.Frequency*t)
 		buf[writeIdx+i] = int16(y)
 	}
@@ -49,18 +49,18 @@ func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 }
 
 type TriangleOscillator struct {
-	Note notes.StaveNote
+	Note instrument.StaveNote
 }
 
 func (s *TriangleOscillator) Generate(buf []int16, writeIdx int) (int, error) {
-	numSamples := s.Note.Interval * constants.SampleRate / 1000
+	numSamples := s.Note.Interval * audio.SampleRate / 1000
 	amp := float64(s.Note.Amplitude)
 
 	var phase float64
 	// y = 4/f * x - amp
 	for i := 0; i < numSamples; i++ {
 		// I NEED THIS EXPLAINED
-		phase += s.Note.Frequency / float64(constants.SampleRate)
+		phase += s.Note.Frequency / float64(audio.SampleRate)
 		if phase >= 1.0 {
 			phase -= 1.0
 		}

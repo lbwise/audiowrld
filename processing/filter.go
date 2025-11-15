@@ -1,7 +1,7 @@
 package processing
 
 import (
-	"github.com/lbwise/audiowrld/simplesynth/constants"
+	"github.com/lbwise/audiowrld/audio"
 )
 
 //func ApplyLPFilter(data bin, cutoffRate int) {
@@ -42,7 +42,7 @@ func (ce *ClippingEffect) Process(in, out []int16) []int16 {
 		return nil
 	}
 	gain := min(max(ce.Gain, ce.gainMin), ce.gainMax)
-	clipVal := (1 - (float64(gain) / 128.0)) * float64(constants.MaxAmp)
+	clipVal := (1 - (float64(gain) / 128.0)) * float64(audio.MaxAmp)
 	level := 1.0 + (float64(ce.Level) / 128.0)
 
 	for i := 0; i < len(in); i += 1 {
@@ -54,7 +54,7 @@ func (ce *ClippingEffect) Process(in, out []int16) []int16 {
 		}
 
 		amp *= level
-		maxAmp := float64(constants.MaxAmp)
+		maxAmp := float64(audio.MaxAmp)
 		if amp > maxAmp {
 			amp = maxAmp
 		} else if amp < -maxAmp {

@@ -1,9 +1,9 @@
-package notes
+package instrument
 
 import (
 	"math"
 
-	"github.com/lbwise/audiowrld/simplesynth/constants"
+	"github.com/lbwise/audiowrld/audio"
 )
 
 var flatsMap = map[string]string{
@@ -34,11 +34,11 @@ func (s *Stave) Generate() int {
 	var sampleSize int
 	for i := range *s {
 		note := &(*s)[i] // reference to the actual element
-		sampleSize += note.Interval * constants.SampleRate / 1000
+		sampleSize += note.Interval * audio.SampleRate / 1000
 		if note.Velocity == 0 {
 			note.Velocity = 127
 		}
-		note.Amplitude = int16(constants.MaxAmp * note.Velocity / 128)
+		note.Amplitude = int16(audio.MaxAmp * note.Velocity / 128)
 		note.Frequency = GetFrequency(note.Note, note.Octave)
 	}
 	return sampleSize

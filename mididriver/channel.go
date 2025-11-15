@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lbwise/audiowrld/engine"
-	"github.com/lbwise/audiowrld/simplesynth/constants"
+	"github.com/lbwise/audiowrld/audio"
 )
 
 // So the idea is we receive all these events from the scanner as instructions
@@ -35,13 +34,13 @@ func (ch *Channel) Play(chunkSize int) (error, func() error) {
 	go func() {
 		for recording {
 			// Generate chunk
-			time.Sleep(time.Second * time.Duration(float64(ch.chunkSize)/float64(constants.SampleRate))) // ~11ms
+			time.Sleep(time.Second * time.Duration(float64(ch.chunkSize)/float64(audio.SampleRate))) // ~11ms
 		}
 	}()
 	return nil, stopCb
 }
 
-func (ch *Channel) Tick(buf engine.AudioBuffer) (error, engine.AudioBuffer) {
+func (ch *Channel) Tick(buf audio.Buffer) (error, audio.Buffer) {
 	// Generate sound from piano roll
 	// generate tick size worth of sound
 	return nil, []float32{}

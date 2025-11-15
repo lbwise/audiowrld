@@ -1,9 +1,7 @@
-package oscillator
-
-import "github.com/lbwise/audiowrld/simplesynth/io"
+package instrument
 
 type Instrument interface {
-	Play(input io.MidiInput) []int16
+	Play(input MidiInput) []int16
 	Configure(settings InstrumentSettings)
 }
 
