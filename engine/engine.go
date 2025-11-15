@@ -6,9 +6,9 @@ import (
 	//"sync"
 
 	"github.com/lbwise/audiowrld/audio"
+	inst "github.com/lbwise/audiowrld/instrument"
 	"github.com/lbwise/audiowrld/io"
 	midi "github.com/lbwise/audiowrld/mididriver"
-	inst "github.com/lbwise/audiowrld/simplesynth/oscillator"
 )
 
 type Ticker interface {
