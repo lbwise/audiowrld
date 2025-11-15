@@ -20,7 +20,6 @@ import (
 )
 
 func main() {
-
 	var chs midi.Channels = make([]*midi.Channel, midi.MaxChannels)
 	err, chId := chs.NewChannel()
 	if err != nil {

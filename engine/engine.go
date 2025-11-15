@@ -7,21 +7,34 @@ import (
 	"github.com/lbwise/audiowrld/io"
 	midi "github.com/lbwise/audiowrld/mididriver"
 	"github.com/lbwise/audiowrld/simplesynth/constants"
-	"github.com/lbwise/audiowrld/simplesynth/oscillator"
+	inst "github.com/lbwise/audiowrld/simplesynth/oscillator"
 )
 
 type Engine struct {
 	channels     midi.Channels
-	instruments  []oscillator.Instrument
+	instruments  []inst.Instrument
 	params       *Params
 	outputDevice *io.OutputDevice
 	scanChan     chan midi.RawMsg
+	tracks       []Track
+	master       Track
+	tick         int
 }
+
+type Track interface {
+	Name() string
+}
+
+type InputTrack struct {
+	buf AudioBuffer
+}
+
+type AudioBuffer []float32
 
 func NewAudioEngine() *Engine {
 	return &Engine{
 		channels:    make([]*midi.Channel, midi.MaxChannels),
-		instruments: []oscillator.Instrument{},
+		instruments: []inst.Instrument{},
 		params:      NewDefaultParams(),
 	}
 }
@@ -65,10 +78,6 @@ func (eng *Engine) Record() error {
 	}()
 
 	return nil
-}
-
-type AudioBuffer struct {
-	chunks [][]int16
 }
 
 type Params struct {
