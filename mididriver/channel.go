@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lbwise/audiowrld/engine"
 	"github.com/lbwise/audiowrld/simplesynth/constants"
 )
 
@@ -15,8 +16,12 @@ import (
 const MaxChannels = 16
 
 type Channel struct {
-	Id uint8
-	//Instrument oscillator.Instrument
+	Id           uint8
+	curPianoRoll []int
+	chunkSize    int
+	// You would add global midi control properties here
+	// instrument oscillator.Instrument
+	// track        *engine.InputTrack
 }
 
 func (ch *Channel) Play(chunkSize int) (error, func() error) {
@@ -30,23 +35,37 @@ func (ch *Channel) Play(chunkSize int) (error, func() error) {
 	go func() {
 		for recording {
 			// Generate chunk
-			time.Sleep(time.Second * time.Duration(float64(chunkSize)/float64(constants.SampleRate)))
+			time.Sleep(time.Second * time.Duration(float64(ch.chunkSize)/float64(constants.SampleRate))) // ~11ms
 		}
 	}()
 	return nil, stopCb
 }
 
-func (ch *Channel) NewEvent(msg Msg) {
-	fmt.Println("MSG:", msg)
+func (ch *Channel) Tick(buf engine.AudioBuffer) (error, engine.AudioBuffer) {
+	// Generate sound from piano roll
+	// generate tick size worth of sound
+	return nil, []float32{}
+}
+
+func (ch *Channel) NewMsg(msg Msg) {
+	if msg.On {
+		ch.curPianoRoll[msg.Note] = msg.Velocity
+	} else {
+		ch.curPianoRoll[msg.Note] = 0
+	}
 }
 
 type Channels []*Channel
 
-func (m Channels) NewChannel() (error, uint8) {
+func (m Channels) NewChannel(chunkSize int) (error, uint8) {
 	for i, ch := range m {
 		if ch == nil {
-			//ch := &Channel{Id: id, Instrument: inst}
-			m[i] = &Channel{Id: uint8(i)}
+			m[i] = &Channel{
+				Id:           uint8(i),
+				curPianoRoll: make([]int, 128),
+				chunkSize:    chunkSize,
+				//  instrument: inst,
+			}
 			return nil, uint8(i)
 		}
 	}

@@ -48,7 +48,6 @@ func main() {
 	go func() {
 		defer wg.Done()
 		defer func() {
-			fmt.Println("STOPPING FIRST")
 			stopCb()
 		}()
 		midi.MidiSim(in, int(chId))
