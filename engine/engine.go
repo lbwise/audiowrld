@@ -71,7 +71,7 @@ func (eng *Engine) Tick(buf audio.Buffer) (error, audio.Buffer) {
 	for _, track := range eng.tracks {
 		trackBuf := audio.NewBuffer()
 		if track.Type() == MidiTrack {
-			midiTr := InputTrack(track)
+			midiTr := track.(*InputTrack) // Turn this into a MIDI track - I don't think we need input/non-input tracks
 			err, buf := midiTr.channel.Tick(trackBuf)
 			trackBuf = buf
 			if err != nil {
@@ -80,7 +80,7 @@ func (eng *Engine) Tick(buf audio.Buffer) (error, audio.Buffer) {
 
 			//midiTr.Tick(buf)
 		} else {
-			//audioTrack := AudioTrack(track)
+			//audioTr := track.(*AudioTrack)
 			return nil, trackBuf
 		}
 
@@ -94,7 +94,6 @@ func (eng *Engine) Tick(buf audio.Buffer) (error, audio.Buffer) {
 	}
 
 	// Process mix (or is that done in mix track.Tick)
-
 	buf = outBuf
 	return nil, buf
 }

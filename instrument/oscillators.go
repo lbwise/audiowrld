@@ -4,7 +4,6 @@ import (
 	"math"
 
 	"github.com/lbwise/audiowrld/audio"
-	"github.com/lbwise/audiowrld/instrument"
 )
 
 type Oscillator interface {
@@ -12,7 +11,7 @@ type Oscillator interface {
 }
 
 type SquareOscillator struct {
-	Note instrument.StaveNote
+	Note StaveNote
 }
 
 func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
@@ -33,7 +32,7 @@ func (s *SquareOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 }
 
 type SinOscillator struct {
-	Note instrument.StaveNote
+	Note StaveNote
 }
 
 func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
@@ -49,7 +48,7 @@ func (s *SinOscillator) Generate(buf []int16, writeIdx int) (int, error) {
 }
 
 type TriangleOscillator struct {
-	Note instrument.StaveNote
+	Note StaveNote
 }
 
 func (s *TriangleOscillator) Generate(buf []int16, writeIdx int) (int, error) {
